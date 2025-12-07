@@ -13,13 +13,13 @@ export const dassQuestions = [
   { id: 12, text: 'Saya merasa sulit untuk bersantai', category: 'stress' },
   { id: 13, text: 'Saya merasa sedih dan tertekan', category: 'depression' },
   { id: 14, text: 'Saya tidak dapat memaklumi hal apa pun yang menghalangi saya', category: 'stress' },
-  { id: 15, text: 'Saya merasa saya hampir panik', category: 'anxiety' },
+  { id: 15, text: 'Saya merasa sering panik belakangan ini', category: 'anxiety' },
   { id: 16, text: 'Saya tidak antusias dalam hal apa pun', category: 'depression' },
   { id: 17, text: 'Saya merasa saya tidak berharga sebagai seseorang', category: 'depression' },
   { id: 18, text: 'Saya merasa saya mudah tersinggung', category: 'stress' },
-  { id: 19, text: 'Saya menyadari detak jantung saya (tanpa latihan fisik)', category: 'anxiety' },
+  { id: 19, text: 'Saya menyadari detak jantung saya berdetak cepat (tanpa latihan fisik)', category: 'anxiety' },
   { id: 20, text: 'Saya merasa takut tanpa alasan yang jelas', category: 'anxiety' },
-  { id: 21, text: 'Saya merasa hidup tidak berati', category: 'depression' },
+  { id: 21, text: 'Saya merasa hidup tidak berarti', category: 'depression' },
 ]
 
 // Helper untuk hitung score
