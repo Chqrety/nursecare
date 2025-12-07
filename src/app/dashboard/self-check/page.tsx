@@ -117,62 +117,93 @@ export default function SelfCheckPage() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto space-y-6">
-      <h1 className="text-2xl font-bold">Cek Kondisi Diri</h1>
+    <div className="max-w-4xl mx-auto space-y-8 pb-10">
+      <div className="text-center md:text-left">
+        <h1 className="text-3xl font-bold text-gray-800">Cek Kondisi Diri 🩺</h1>
+        <p className="text-gray-500 mt-2">Luangkan waktu sejenak untuk mendengarkan tubuh dan pikiranmu.</p>
+      </div>
 
       <Tabs defaultValue="mood" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="mood">Mood Harian</TabsTrigger>
-          <TabsTrigger value="dass">Tes Stress (DASS-21)</TabsTrigger>
+        {/* Tabs List Modern */}
+        <TabsList className="grid w-full grid-cols-2 p-1 bg-white/50 backdrop-blur rounded-2xl border border-white/40 mb-8 h-14">
+          <TabsTrigger
+            value="mood"
+            className="rounded-xl h-12 data-[state=active]:bg-blue-100 data-[state=active]:text-blue-700 font-bold transition-all"
+          >
+            Mood Harian
+          </TabsTrigger>
+          <TabsTrigger
+            value="dass"
+            className="rounded-xl h-12 data-[state=active]:bg-purple-100 data-[state=active]:text-purple-700 font-bold transition-all"
+          >
+            Tes Stress (DASS-21)
+          </TabsTrigger>
         </TabsList>
 
-        {/* === TAB 1: MOOD CHECK === */}
+        {/* === TAB MOOD === */}
         <TabsContent value="mood">
-          <Card>
-            <CardHeader>
-              <CardTitle>Apa yang kamu rasakan sekarang?</CardTitle>
+          <Card className="border-none shadow-xl bg-white/70 backdrop-blur-md rounded-3xl overflow-hidden">
+            <CardHeader className="bg-linear-to-r from-blue-50 to-transparent p-8">
+              <CardTitle className="text-2xl text-blue-900">Apa yang kamu rasakan sekarang?</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="flex justify-between gap-2">
+            <CardContent className="p-8 space-y-8">
+              {/* Emoji Grid - Lebih Besar & Interaktif */}
+              <div className="flex flex-wrap justify-center gap-4 sm:gap-8">
                 {[
-                  { val: "senang", icon: Smile, color: "text-green-500", label: "Senang" },
-                  { val: "netral", icon: Meh, color: "text-gray-500", label: "Biasa" },
-                  { val: "sedih", icon: Frown, color: "text-blue-500", label: "Sedih" },
-                  { val: "lelah", icon: BatteryWarning, color: "text-orange-500", label: "Lelah" },
-                  { val: "marah", icon: Angry, color: "text-red-500", label: "Marah" },
+                  { val: "senang", icon: Smile, color: "text-green-500", bg: "bg-green-100", label: "Happy" },
+                  { val: "netral", icon: Meh, color: "text-gray-500", bg: "bg-gray-100", label: "Biasa" },
+                  { val: "sedih", icon: Frown, color: "text-blue-500", bg: "bg-blue-100", label: "Sedih" },
+                  { val: "lelah", icon: BatteryWarning, color: "text-orange-500", bg: "bg-orange-100", label: "Lelah" },
+                  { val: "marah", icon: Angry, color: "text-red-500", bg: "bg-red-100", label: "Marah" },
                 ].map(item => (
                   <button
                     key={item.val}
                     onClick={() => setMood(item.val)}
-                    className={`flex flex-col items-center gap-2 p-4 rounded-lg border-2 transition-all ${
-                      mood === item.val ? "border-blue-600 bg-blue-50" : "border-transparent hover:bg-gray-100"
+                    className={`group flex flex-col items-center gap-3 p-4 rounded-2xl transition-all duration-300 ${
+                      mood === item.val
+                        ? "bg-white shadow-lg scale-110 ring-4 ring-blue-100"
+                        : "hover:bg-white/50 hover:scale-105"
                     }`}
                   >
-                    <item.icon className={`w-10 h-10 ${item.color}`} />
-                    <span className="text-xs font-medium">{item.label}</span>
+                    <div
+                      className={`p-4 rounded-full ${item.bg} ${item.color} group-hover:rotate-6 transition-transform`}
+                    >
+                      <item.icon className="w-10 h-10" />
+                    </div>
+                    <span className={`text-sm font-bold ${mood === item.val ? "text-gray-800" : "text-gray-500"}`}>
+                      {item.label}
+                    </span>
                   </button>
                 ))}
               </div>
 
-              <div className="space-y-2">
-                <Label>Catatan Kecil (Opsional)</Label>
+              {/* Textarea dengan style glass */}
+              <div className="space-y-3">
+                <Label className="text-gray-700 font-medium ml-1">Catatan Kecil (Opsional)</Label>
                 <Textarea
                   placeholder="Ceritain dikit dong kenapa..."
                   value={note}
                   onChange={e => setNote(e.target.value)}
+                  className="bg-white/50 border-gray-200 focus:bg-white min-h-[120px] rounded-xl text-base p-4"
                 />
               </div>
 
-              <Button onClick={submitMood} disabled={loading} className="w-full">
+              <Button
+                onClick={submitMood}
+                disabled={loading}
+                className="w-full h-12 rounded-xl text-lg font-bold bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-600/20"
+              >
                 {loading ? "Menyimpan..." : "Simpan Mood"}
               </Button>
             </CardContent>
           </Card>
         </TabsContent>
 
-        {/* === TAB 2: DASS TEST === */}
+        {/* === TAB DASS (Simple Polish) === */}
         <TabsContent value="dass">
-          <Card>
+          <Card className="border-none shadow-xl bg-white/70 backdrop-blur-md rounded-3xl">
+            {/* ... Isi card DASS, sesuaikan padding jadi p-8 biar lega ... */}
+            {/* Tombol Radio bisa dikasih accent color biar ungu */}
             <CardHeader>
               <CardTitle>DASS-21 Assessment</CardTitle>
               <CardDescription>
@@ -193,7 +224,7 @@ export default function SelfCheckPage() {
                         <input
                           type="radio"
                           name={`q-${q.id}`}
-                          className="w-5 h-5 accent-blue-600 mb-1"
+                          className="w-5 h-5 accent-purple-600 mb-1"
                           checked={answers[q.id] === score}
                           onChange={() => setAnswers({ ...answers, [q.id]: score })}
                         />
@@ -214,13 +245,13 @@ export default function SelfCheckPage() {
       <Dialog open={showResult} onOpenChange={setShowResult}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-xl text-center text-blue-700">{resultMessage.title}</DialogTitle>
+            <DialogTitle className="text-xl text-center text-purple-700">{resultMessage.title}</DialogTitle>
             <DialogDescription className="text-center text-lg mt-4 font-medium text-gray-700 italic">
               "{resultMessage.msg}"
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="sm:justify-center">
-            <Button type="button" variant="secondary" onClick={() => setShowResult(false)}>
+            <Button type="button" variant="secondary" className="bg-purple-700" onClick={() => setShowResult(false)}>
               Siap, Lanjut Berjuang! 💪
             </Button>
           </DialogFooter>
@@ -229,3 +260,98 @@ export default function SelfCheckPage() {
     </div>
   );
 }
+
+// <div className="max-w-3xl mx-auto space-y-6">
+//   <h1 className="text-2xl font-bold">Cek Kondisi Diri</h1>
+
+//   <Tabs defaultValue="mood" className="w-full">
+//     <TabsList className="grid w-full grid-cols-2">
+//       <TabsTrigger value="mood">Mood Harian</TabsTrigger>
+//       <TabsTrigger value="dass">Tes Stress (DASS-21)</TabsTrigger>
+//     </TabsList>
+
+//     {/* === TAB 1: MOOD CHECK === */}
+//     <TabsContent value="mood">
+//       <Card>
+//         <CardHeader>
+//           <CardTitle>Apa yang kamu rasakan sekarang?</CardTitle>
+//         </CardHeader>
+//         <CardContent className="space-y-6">
+//           <div className="flex justify-between gap-2">
+//             {[
+//               { val: "senang", icon: Smile, color: "text-green-500", label: "Senang" },
+//               { val: "netral", icon: Meh, color: "text-gray-500", label: "Biasa" },
+//               { val: "sedih", icon: Frown, color: "text-blue-500", label: "Sedih" },
+//               { val: "lelah", icon: BatteryWarning, color: "text-orange-500", label: "Lelah" },
+//               { val: "marah", icon: Angry, color: "text-red-500", label: "Marah" },
+//             ].map(item => (
+//               <button
+//                 key={item.val}
+//                 onClick={() => setMood(item.val)}
+//                 className={`flex flex-col items-center gap-2 p-4 rounded-lg border-2 transition-all ${
+//                   mood === item.val ? "border-blue-600 bg-blue-50" : "border-transparent hover:bg-gray-100"
+//                 }`}
+//               >
+//                 <item.icon className={`w-10 h-10 ${item.color}`} />
+//                 <span className="text-xs font-medium">{item.label}</span>
+//               </button>
+//             ))}
+//           </div>
+
+//           <div className="space-y-2">
+//             <Label>Catatan Kecil (Opsional)</Label>
+//             <Textarea
+//               placeholder="Ceritain dikit dong kenapa..."
+//               value={note}
+//               onChange={e => setNote(e.target.value)}
+//             />
+//           </div>
+
+//           <Button onClick={submitMood} disabled={loading} className="w-full">
+//             {loading ? "Menyimpan..." : "Simpan Mood"}
+//           </Button>
+//         </CardContent>
+//       </Card>
+//     </TabsContent>
+
+//     {/* === TAB 2: DASS TEST === */}
+//     <TabsContent value="dass">
+//       <Card>
+//         <CardHeader>
+//           <CardTitle>DASS-21 Assessment</CardTitle>
+//           <CardDescription>
+//             Pilih angka 0-3 yang paling sesuai dengan kondisimu seminggu terakhir.
+//             <br />
+//             0: Tidak sesuai | 1: Kadang-kadang | 2: Sering | 3: Sangat Sering
+//           </CardDescription>
+//         </CardHeader>
+//         <CardContent className="space-y-8">
+//           {dassQuestions.map((q, index) => (
+//             <div key={q.id} className="space-y-3 border-b pb-4 last:border-0">
+//               <p className="font-medium text-gray-800">
+//                 {index + 1}. {q.text}
+//               </p>
+//               <div className="flex gap-4 justify-between sm:justify-start">
+//                 {[0, 1, 2, 3].map(score => (
+//                   <label key={score} className="flex flex-col items-center cursor-pointer">
+//                     <input
+//                       type="radio"
+//                       name={`q-${q.id}`}
+//                       className="w-5 h-5 accent-blue-600 mb-1"
+//                       checked={answers[q.id] === score}
+//                       onChange={() => setAnswers({ ...answers, [q.id]: score })}
+//                     />
+//                     <span className="text-sm text-gray-500">{score}</span>
+//                   </label>
+//                 ))}
+//               </div>
+//             </div>
+//           ))}
+
+//           <Button onClick={submitDASS} disabled={loading} className="w-full bg-purple-600 hover:bg-purple-700">
+//             {loading ? "Menghitung..." : "Lihat Hasil"}
+//           </Button>
+//         </CardContent>
+//       </Card>
+//     </TabsContent>
+//   </Tabs>

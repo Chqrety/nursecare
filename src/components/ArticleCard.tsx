@@ -11,13 +11,13 @@ export function ArticleCard({ article }: { article: any }) {
 
   return (
     <>
-      <Card className="flex flex-col h-full hover:shadow-lg transition-shadow">
+      <Card className="group flex flex-col h-full bg-white/70 backdrop-blur border-white/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 rounded-2xl overflow-hidden cursor-pointer">
         {/* Gambar Artikel */}
-        <div className="h-48 w-full overflow-hidden rounded-t-lg bg-gray-200">
+        <div className="h-48 w-full overflow-hidden bg-gray-200">
           <img
             src={article.image_url || "https://placehold.co/600x400"}
             alt={article.title}
-            className="h-full w-full object-cover transition-transform hover:scale-105"
+            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
           />
         </div>
 

@@ -118,5 +118,17 @@
   }
   body {
     @apply bg-background text-foreground;
+    /* Gradient Pastel: Biru muda ke Ungu muda */
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #f5f3ff 100%);
+    background-attachment: fixed; /* Biar background stay pas scroll */
+    color: #1e293b;
   }
+}
+
+/* Utilitas buat Glass Effect */
+.glass-card {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
 }
