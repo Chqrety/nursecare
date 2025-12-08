@@ -217,7 +217,7 @@ export default function SelfCheckPage() {
   return (
     <div className="max-w-4xl mx-auto space-y-8 pb-10">
       <div className="text-center md:text-left">
-        <h1 className="text-3xl font-bold text-gray-800">Cek Kondisi Diri 🩺</h1>
+        <h1 className="text-3xl font-bold text-gray-800">Cek Kondisi Diri</h1>
         <p className="text-gray-500 mt-2">Satu hari, satu kali cek. Konsistensi adalah kunci!</p>
       </div>
 
