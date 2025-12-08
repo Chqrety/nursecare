@@ -31,7 +31,7 @@ export function BreathingExercise() {
   }, [active]);
 
   return (
-    <div className="md:col-span-3 rounded-2xl bg-linear-to-br from-teal-100 to-emerald-50 p-6 shadow-sm border border-teal-100 flex flex-col items-center justify-center text-center relative overflow-hidden">
+    <div className="md:col-span-1 rounded-2xl bg-linear-to-br from-teal-100 to-emerald-50 p-6 shadow-sm border border-teal-100 flex flex-col items-center justify-center text-center relative overflow-hidden">
       {/* Animasi Circle */}
       <div
         className={`absolute w-32 h-32 bg-teal-300 rounded-full blur-2xl opacity-40 transition-all duration-4000 ease-in-out ${

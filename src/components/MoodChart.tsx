@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import { CartesianGrid, Line, LineChart, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { CartesianGrid, Line, LineChart, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 // Mapping Emoji ke Angka biar bisa digrafikkan
 const moodScore: Record<string, number> = {
@@ -10,17 +10,30 @@ const moodScore: Record<string, number> = {
   lelah: 2,
   sedih: 1,
   marah: 0,
-}
+};
 
 export function MoodChart({ data }: { data: any[] }) {
-  // Format data biar dimengerti Recharts
-  const chartData = data
-    .map(log => ({
-      date: new Date(log.created_at).toLocaleDateString("id-ID", { day: "2-digit", month: "short" }),
-      score: moodScore[log.mood] || 3, // Default netral
-      mood: log.mood,
-    }))
-    .reverse() // Biar urut dari lama ke baru
+  const rawData = data.map(log => ({
+    // Format tanggal ke lokal Indonesia
+    date: new Date(log.created_at).toLocaleDateString("id-ID", { day: "2-digit", month: "short" }),
+    score: moodScore[log.mood] || 3,
+    mood: log.mood,
+    fullDate: new Date(log.created_at), // Simpan waktu asli buat sorting
+  }));
+
+  // 2. Filter Duplikat Tanggal (Ambil yang paling terakhir diinput per tanggal)
+  const uniqueDataMap = new Map();
+
+  rawData.forEach(item => {
+    // Karena data biasanya urut dari baru ke lama,
+    // kita set cuma kalau tanggal belum ada di Map (atau bisa dibalik logicnya)
+    if (!uniqueDataMap.has(item.date)) {
+      uniqueDataMap.set(item.date, item);
+    }
+  });
+
+  // Convert Map balik ke Array dan Balik urutan (Lama -> Baru) buat Grafik
+  const chartData = Array.from(uniqueDataMap.values()).reverse();
 
   return (
     <Card>
@@ -42,9 +55,9 @@ export function MoodChart({ data }: { data: any[] }) {
                         <p className="font-bold">{payload[0].payload.date}</p>
                         <p>Mood: {payload[0].payload.mood}</p>
                       </div>
-                    )
+                    );
                   }
-                  return null
+                  return null;
                 }}
               />
               <Line type="monotone" dataKey="score" stroke="#2563eb" strokeWidth={2} dot={{ r: 4, fill: "#2563eb" }} />
@@ -57,5 +70,5 @@ export function MoodChart({ data }: { data: any[] }) {
         )}
       </CardContent>
     </Card>
-  )
+  );
 }

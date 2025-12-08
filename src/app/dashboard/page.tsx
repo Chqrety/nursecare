@@ -25,6 +25,28 @@ export default async function DashboardPage() {
     .order("created_at", { ascending: false })
     .limit(7);
 
+  const moodCounts: Record<string, number> = {};
+  moodLogs?.forEach(log => {
+    moodCounts[log.mood] = (moodCounts[log.mood] || 0) + 1;
+  });
+
+  let dominantMood = "-";
+  let maxCount = 0;
+  Object.entries(moodCounts).forEach(([mood, count]) => {
+    if (count > maxCount) {
+      maxCount = count;
+      dominantMood = mood;
+    }
+  });
+
+  const getEmoji = (m: string) => {
+    if (m === "senang") return "😄";
+    if (m === "sedih") return "😢";
+    if (m === "lelah") return "😫";
+    if (m === "marah") return "😡";
+    return "😐";
+  };
+
   return (
     <div className="space-y-8 pb-10">
       {/* === HERO SECTION: Gradient Banner === */}
@@ -93,6 +115,29 @@ export default async function DashboardPage() {
         </div>
       </div>
 
+      {/* === WEEKLY INSIGHT (REVISI 4) === */}
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+        <Card className="bg-blue-50/50 border-blue-100">
+          <CardContent className="p-4 flex flex-col items-center justify-center text-center">
+            <span className="text-xs font-bold text-blue-600 uppercase tracking-wider">Mood Dominan</span>
+            <div className="text-3xl mt-2">{getEmoji(dominantMood)}</div>
+            <span className="text-sm font-medium capitalize mt-1 text-blue-800">{dominantMood}</span>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-green-50/50 border-green-100">
+          <CardContent className="p-4 flex flex-col items-center justify-center text-center">
+            <span className="text-xs font-bold text-green-600 uppercase tracking-wider">Rajin Check-in</span>
+            <div className="text-3xl font-bold text-green-700 mt-2">
+              {moodLogs?.length || 0}
+              <span className="text-sm font-normal text-green-600">/7 Hari</span>
+            </div>
+          </CardContent>
+        </Card>
+
+        <BreathingExercise />
+      </div>
+
       {/* === GRAFIK SECTION === */}
       <div className="grid gap-6 md:grid-cols-3">
         {/* Grafik Utama */}
@@ -113,8 +158,6 @@ export default async function DashboardPage() {
         <div className="h-full min-h-[300px]">
           <RandomQuote />
         </div>
-
-        <BreathingExercise />
       </div>
     </div>
   );
