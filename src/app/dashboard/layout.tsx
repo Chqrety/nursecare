@@ -2,7 +2,7 @@ import Link from "next/link";
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { HeartPulse, LayoutDashboard, FileText, User, LogOut, History, Menu } from "lucide-react";
+import { HeartPulse, LayoutDashboard, FileText, User, LogOut, History, Menu, Users, Stethoscope } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -48,6 +48,16 @@ export default async function DashboardLayout({ children }: { children: React.Re
       <Link href="/dashboard/educare">
         <Button variant="ghost" className="w-full justify-start gap-2">
           <FileText className="h-4 w-4" /> Educare
+        </Button>
+      </Link>
+      <Link href="/dashboard/community">
+        <Button variant="ghost" className="w-full justify-start gap-2">
+          <Users className="h-4 w-4" /> Komunitas
+        </Button>
+      </Link>
+      <Link href="/dashboard/consultation">
+        <Button variant="ghost" className="w-full justify-start gap-2">
+          <Stethoscope className="h-4 w-4" /> Layanan Konsul
         </Button>
       </Link>
       {/* Menu Admin */}

@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { dassQuestions, calculateScore } from "@/constants/dass";
-import { Smile, Frown, Meh, Angry, BatteryWarning, CheckCircle } from "lucide-react";
+import { Smile, Frown, Meh, Angry, BatteryWarning, CheckCircle, Phone, Activity } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -19,7 +19,6 @@ import {
   DialogFooter,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { Progress } from "@/components/ui/progress"; // Install: npx shadcn@latest add progress
 
 // Quote Database
 const quotes = [
@@ -102,15 +101,14 @@ export default function SelfCheckPage() {
     if (error) {
       toast.error("Gagal simpan mood");
     } else {
-      // REVISI 2: MUNCUL QUOTE SETELAH ISI
-      setHasFilledMood(true); // Lock tombol
+      setHasFilledMood(true);
       const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
       setMoodQuote(randomQuote);
-      setShowMoodResult(true); // Trigger Dialog
+      setShowMoodResult(true);
     }
   };
 
-  // --- SUBMIT DASS ---
+  // --- SUBMIT DASS (UPDATE LOGIC DISINI) ---
   const submitDASS = async () => {
     if (Object.keys(answers).length < 21) {
       return toast.warning("Isi semua 21 pertanyaan dulu ya!");
@@ -121,15 +119,18 @@ export default function SelfCheckPage() {
       data: { user },
     } = await supabase.auth.getUser();
 
-    // Logic Level Simple
+    // Logic Level Simple (>14 itu Moderate ke atas)
     const getLevel = (val: number) => (val > 20 ? "severe" : val > 14 ? "moderate" : val > 9 ? "mild" : "normal");
 
-    // Simpan logic level buat redirect nanti
+    // Logic Dominant Issue
     const maxScore = Math.max(scores.stress, scores.anxiety, scores.depression);
     let dominantIssue = "general";
     if (scores.stress === maxScore) dominantIssue = "stress";
     if (scores.anxiety === maxScore) dominantIssue = "anxiety";
     if (scores.depression === maxScore) dominantIssue = "depression";
+
+    // Logic High Risk (Kalau ada salah satu yang Moderate/Severe)
+    const isHighRisk = scores.stress > 14 || scores.anxiety > 14 || scores.depression > 14;
 
     const { error } = await supabase.from("dass_assessments").insert({
       user_id: user?.id,
@@ -146,12 +147,12 @@ export default function SelfCheckPage() {
       toast.error("Gagal submit tes.");
     } else {
       setHasFilledDASS(true);
-      setDassResult({ scores, dominantIssue });
-      setShowDassResult(true); // Trigger Visual Dialog
+      setDassResult({ scores, dominantIssue, isHighRisk }); // Simpan status High Risk
+      setShowDassResult(true);
     }
   };
 
-  // Helper Visual Bar (REVISI 5)
+  // Helper Visual Bar (Versi Warna Custom)
   const VisualBar = ({
     label,
     score,
@@ -165,27 +166,13 @@ export default function SelfCheckPage() {
   }) => {
     const percentage = Math.min((score / max) * 100, 100);
 
-    // ✅ SOLUSI: Tulis nama class secara LENGKAP di sini biar dibaca Tailwind
-    // Gak perlu safelist di config lagi.
+    // Lookup Style Manual (Biar Tailwind Baca)
     const styles: Record<string, { text: string; bar: string; track: string }> = {
-      red: {
-        text: "text-red-800",
-        bar: "bg-red-600",
-        track: "bg-red-200",
-      },
-      yellow: {
-        text: "text-yellow-800",
-        bar: "bg-yellow-600",
-        track: "bg-yellow-200",
-      },
-      blue: {
-        text: "text-blue-800",
-        bar: "bg-blue-600",
-        track: "bg-blue-200",
-      },
+      red: { text: "text-red-800", bar: "bg-red-800", track: "bg-red-200" },
+      yellow: { text: "text-yellow-800", bar: "bg-yellow-800", track: "bg-yellow-200" },
+      blue: { text: "text-blue-800", bar: "bg-blue-800", track: "bg-blue-200" },
     };
 
-    // Ambil style sesuai colorName, kalau gak ada default ke red
     const currentStyle = styles[colorName] || styles.red;
 
     return (
@@ -196,16 +183,12 @@ export default function SelfCheckPage() {
             {score} / {max}
           </span>
         </div>
-
-        {/* Track Background */}
         <div className={`h-3 w-full overflow-hidden rounded-full ${currentStyle.track}`}>
-          {/* Progress Bar Utama */}
           <div
             className={`h-full ${currentStyle.bar} transition-all duration-500 ease-in-out rounded-full`}
             style={{ width: `${percentage}%` }}
           />
         </div>
-
         <div className="flex justify-between text-[10px] text-gray-400 uppercase font-medium">
           <span>Normal</span>
           <span>Parah</span>
@@ -215,13 +198,25 @@ export default function SelfCheckPage() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8 pb-10">
-      <div className="text-center md:text-left">
-        <h1 className="text-3xl font-bold text-gray-800">Cek Kondisi Diri</h1>
-        <p className="text-gray-500 mt-2">Satu hari, satu kali cek. Konsistensi adalah kunci!</p>
+    <div className="max-w-7xl mx-auto space-y-8 pb-10">
+      <div className="relative overflow-hidden rounded-3xl bg-linear-to-r from-blue-600 to-cyan-600 p-8 text-white shadow-xl">
+        <div className="relative z-10">
+          <h1 className="text-3xl font-bold flex items-center gap-3">
+            <Activity className="w-8 h-8 text-blue-200" />
+            Cek Kondisi Diri
+          </h1>
+          <p className="mt-2 text-blue-100 max-w-2xl">
+            Luangkan waktu sejenak untuk mendengarkan tubuh dan pikiranmu. Satu hari, satu kali cek. Konsistensi adalah
+            kunci!
+          </p>
+        </div>
+
+        {/* Dekorasi Background (Sama kayak Community Page) */}
+        <div className="absolute top-0 right-0 -mr-16 -mt-16 h-64 w-64 rounded-full bg-white/10 blur-3xl"></div>
+        <div className="absolute bottom-0 left-10 h-32 w-32 rounded-full bg-white/10 blur-2xl"></div>
       </div>
 
-      <Tabs defaultValue="mood" className="w-full">
+      <Tabs defaultValue="mood" className="w-full mt-8">
         <TabsList className="grid w-full grid-cols-2 p-1 bg-white/50 backdrop-blur rounded-2xl border border-white/40 mb-8 h-14">
           <TabsTrigger
             value="mood"
@@ -231,7 +226,7 @@ export default function SelfCheckPage() {
           </TabsTrigger>
           <TabsTrigger
             value="dass"
-            className="rounded-xl h-12 data-[state=active]:bg-purple-100 data-[state=active]:text-purple-700 font-bold transition-all"
+            className="rounded-xl h-12 data-[state=active]:bg-cyan-100 data-[state=active]:text-cyan-700 font-bold transition-all"
           >
             Tes Stress (DASS)
           </TabsTrigger>
@@ -330,7 +325,7 @@ export default function SelfCheckPage() {
                               <input
                                 type="radio"
                                 name={`q-${q.id}`}
-                                className="w-5 h-5 accent-purple-600 mb-1"
+                                className="w-5 h-5 accent-cyan-600 mb-1"
                                 checked={answers[q.id] === score}
                                 onChange={() => setAnswers({ ...answers, [q.id]: score })}
                               />
@@ -344,7 +339,7 @@ export default function SelfCheckPage() {
                   <Button
                     onClick={submitDASS}
                     disabled={loading}
-                    className="w-full h-12 rounded-xl bg-purple-600 hover:bg-purple-700 font-bold"
+                    className="w-full h-12 rounded-xl bg-cyan-600 hover:bg-cyan-700 font-bold"
                   >
                     {loading ? "Menghitung..." : "Lihat Hasil"}
                   </Button>
@@ -360,7 +355,7 @@ export default function SelfCheckPage() {
         </TabsContent>
       </Tabs>
 
-      {/* === DIALOG 1: MOOD QUOTE (REVISI 2) === */}
+      {/* === DIALOG 1: MOOD QUOTE === */}
       <Dialog open={showMoodResult} onOpenChange={setShowMoodResult}>
         <DialogContent className="sm:max-w-md text-center">
           <DialogHeader>
@@ -377,11 +372,11 @@ export default function SelfCheckPage() {
         </DialogContent>
       </Dialog>
 
-      {/* === DIALOG 2: HASIL DASS VISUAL (REVISI 5 + 3) === */}
+      {/* === DIALOG 2: HASIL DASS VISUAL (LOGIC REDIRECT UPDATE) === */}
       <Dialog open={showDassResult} onOpenChange={setShowDassResult}>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle className="text-center text-xl font-bold text-purple-900">Hasil Analisa Kamu</DialogTitle>
+            <DialogTitle className="text-center text-xl font-bold text-cyan-900">Hasil Analisa Kamu</DialogTitle>
             <DialogDescription className="text-center">
               Berikut adalah tingkat stress, cemas, dan depresimu.
             </DialogDescription>
@@ -397,16 +392,39 @@ export default function SelfCheckPage() {
             )}
           </div>
 
-          <DialogFooter className="flex-col gap-2 sm:flex-col">
-            <Button
-              className="w-full bg-purple-600 hover:bg-purple-700"
-              onClick={() => {
-                // REVISI 3: REDIRECT KE EDUCARE SESUAI KONDISI
-                router.push(`/dashboard/educare?filter=${dassResult?.dominantIssue}`);
-              }}
-            >
-              📖 Baca Solusi & Edukasi ({dassResult?.dominantIssue})
-            </Button>
+          <DialogFooter className="flex flex-col gap-3">
+            {/* LOGIC TOMBOL PINTAR */}
+            {dassResult?.isHighRisk ? (
+              // KONDISI 1: Kalau Stress Tinggi -> Prioritas ke Konsultasi
+              <div className="w-full space-y-2">
+                <div className="p-3 bg-red-50 text-red-700 text-xs rounded-lg border border-red-100 text-center mb-2">
+                  ⚠️ Skor kamu cukup tinggi. Kami sarankan bicara dengan profesional.
+                </div>
+                <Button
+                  className="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold h-11"
+                  onClick={() => router.push("/dashboard/consultation")}
+                >
+                  <Phone className="w-4 h-4 mr-2" /> Cari Bantuan Profesional
+                </Button>
+
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => router.push(`/dashboard/educare?filter=${dassResult?.dominantIssue}`)}
+                >
+                  📖 Baca Artikel Dulu
+                </Button>
+              </div>
+            ) : (
+              // KONDISI 2: Kalau Aman -> Ke Educare Aja
+              <Button
+                className="w-full bg-cyan-600 hover:bg-cyan-700 h-11"
+                onClick={() => router.push(`/dashboard/educare?filter=${dassResult?.dominantIssue}`)}
+              >
+                📖 Baca Solusi & Edukasi ({dassResult?.dominantIssue})
+              </Button>
+            )}
+
             <Button variant="ghost" onClick={() => setShowDassResult(false)}>
               Tutup
             </Button>

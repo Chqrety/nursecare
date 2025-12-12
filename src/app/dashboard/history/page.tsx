@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
 import { NoteDialog } from "@/components/NoteDialog";
+import { Activity, History, LayoutList } from "lucide-react";
 
 const getSeverityStyle = (level: string) => {
   const styles: Record<string, string> = {
@@ -42,16 +43,32 @@ export default async function HistoryPage() {
 
   return (
     <div className="space-y-8">
-      <div>
-        <h2 className="text-3xl font-bold tracking-tight">Riwayat Kesehatan</h2>
-        <p className="text-gray-500">Jejak perjalanan kesehatan mentalmu.</p>
+      {/* === HEADER (Indigo -> Blue) === */}
+      <div className="relative overflow-hidden rounded-3xl bg-linear-to-r from-indigo-600 to-blue-600 p-8 text-white shadow-xl">
+        <div className="relative z-10">
+          <h1 className="text-3xl font-bold flex items-center gap-3">
+            <History className="w-8 h-8 text-indigo-200" />
+            Riwayat Kesehatan
+          </h1>
+          <p className="mt-2 text-indigo-100 max-w-2xl">
+            Jejak perjalanan kesehatan mentalmu. Pantau progres mood dan tingkat stress dari waktu ke waktu untuk
+            evaluasi diri yang lebih baik.
+          </p>
+        </div>
+
+        {/* Dekorasi Background */}
+        <div className="absolute top-0 right-0 -mr-16 -mt-16 h-64 w-64 rounded-full bg-white/10 blur-3xl"></div>
+        <div className="absolute bottom-0 left-10 h-32 w-32 rounded-full bg-white/10 blur-2xl"></div>
       </div>
 
       <div className="grid gap-8 md:grid-cols-2">
-        {/* === TABEL 1: RIWAYAT MOOD (Nuansa Biru) === */}
+        {/* === TABEL 1: RIWAYAT MOOD (Tema: Blue) === */}
+        {/* Cocok dengan sisi kanan header (to-blue-600) */}
         <Card className="border-none shadow-xl bg-white/70 backdrop-blur-md overflow-hidden rounded-3xl ring-1 ring-white/60">
           <CardHeader className="bg-linear-to-r from-blue-50 to-transparent p-6 border-b border-blue-50">
-            <CardTitle className="flex items-center gap-2 text-blue-900 text-lg">Log Mood Terakhir</CardTitle>
+            <CardTitle className="flex items-center gap-2 text-blue-900 text-lg">
+              <Activity className="w-5 h-5 text-blue-600" /> Log Mood Terakhir
+            </CardTitle>
           </CardHeader>
           <CardContent className="p-0">
             <Table>
@@ -86,7 +103,7 @@ export default async function HistoryPage() {
                         </div>
                       </TableCell>
                       <TableCell className="text-center text-2xl">
-                        <div className="hover:scale-125 transition-transform cursor-default inline-block">
+                        <div className="hover:scale-110 transition-transform cursor-default inline-block">
                           {log.mood === "senang" && "😄"}
                           {log.mood === "netral" && "😐"}
                           {log.mood === "sedih" && "😢"}
@@ -119,19 +136,20 @@ export default async function HistoryPage() {
           </CardContent>
         </Card>
 
-        {/* === TABEL 2: RIWAYAT DASS (Nuansa Ungu) === */}
+        {/* === TABEL 2: RIWAYAT DASS (Tema: Indigo) === */}
+        {/* SEKARANG SUDAH MATCH DENGAN HEADER KIRI (from-indigo-600) */}
         <Card className="border-none shadow-xl bg-white/70 backdrop-blur-md overflow-hidden rounded-3xl ring-1 ring-white/60">
-          <CardHeader className="bg-linear-to-r from-purple-50 to-transparent p-6 border-b border-purple-50">
-            <CardTitle className="flex items-center gap-2 text-purple-900 text-lg">
-              Hasil Tes Lengkap (DASS-21)
+          <CardHeader className="bg-linear-to-r from-indigo-50 to-transparent p-6 border-b border-indigo-50">
+            <CardTitle className="flex items-center gap-2 text-indigo-900 text-lg">
+              <LayoutList className="w-5 h-5 text-indigo-600" /> Hasil Tes Lengkap (DASS-21)
             </CardTitle>
           </CardHeader>
           <CardContent className="p-0">
             <Table>
-              <TableHeader className="bg-purple-50/30">
-                <TableRow className="hover:bg-transparent border-purple-100">
-                  <TableHead className="w-[120px] font-bold text-purple-800 pl-6 align-top pt-4">Tanggal</TableHead>
-                  <TableHead className="font-bold text-purple-800 align-top pt-4">Rincian Skor (S - A - D)</TableHead>
+              <TableHeader className="bg-indigo-50/30">
+                <TableRow className="hover:bg-transparent border-indigo-100">
+                  <TableHead className="w-[120px] font-bold text-indigo-800 pl-6 align-top pt-4">Tanggal</TableHead>
+                  <TableHead className="font-bold text-indigo-800 align-top pt-4">Rincian Skor (S - A - D)</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -146,7 +164,7 @@ export default async function HistoryPage() {
                   </TableRow>
                 ) : (
                   dassLogs?.map(test => (
-                    <TableRow key={test.id} className="hover:bg-purple-50/40 transition-colors border-purple-50">
+                    <TableRow key={test.id} className="hover:bg-indigo-50/40 transition-colors border-indigo-50">
                       {/* Kolom Tanggal */}
                       <TableCell className="font-medium text-xs text-gray-600 pl-6 align-top py-4">
                         <div className="flex flex-col">
@@ -159,7 +177,7 @@ export default async function HistoryPage() {
                         </div>
                       </TableCell>
 
-                      {/* Kolom Hasil (Grid 3 Item) - WARNA DINAMIS SEKARANG */}
+                      {/* Kolom Hasil */}
                       <TableCell className="py-4">
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                           {/* 1. STRESS */}
