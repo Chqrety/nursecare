@@ -42,9 +42,8 @@ export default async function HistoryPage() {
     .limit(20);
 
   return (
-    <div className="space-y-8">
-      {/* === HEADER (Indigo -> Blue) === */}
-      <div className="relative overflow-hidden rounded-3xl bg-linear-to-r from-indigo-600 to-blue-600 p-8 text-white shadow-xl">
+    <div className="max-w-7xl mx-auto space-y-8 pb-10">
+      <div className="relative overflow-hidden rounded-3xl bg-linear-to-r from-indigo-600 to-blue-600 p-8 text-white shadow-xl ">
         <div className="relative z-10">
           <h1 className="text-3xl font-bold flex items-center gap-3">
             <History className="w-8 h-8 text-indigo-200" />

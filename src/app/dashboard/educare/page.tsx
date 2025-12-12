@@ -1,5 +1,6 @@
 import { createClient } from "@/utils/supabase/server";
 import { ArticleCard } from "@/components/ArticleCard";
+import { BookOpen } from "lucide-react";
 
 export default async function EducarePage({ searchParams }: { searchParams: Promise<{ filter?: string }> }) {
   const supabase = await createClient();
@@ -25,14 +26,23 @@ export default async function EducarePage({ searchParams }: { searchParams: Prom
   const { data: articles } = await query;
 
   return (
-    <div className="space-y-8">
-      <div>
-        <h2 className="text-3xl font-bold tracking-tight">Educare</h2>
-        <p className="text-gray-500">
-          {filter
-            ? `Menampilkan artikel rekomendasi untuk: ${filter.toUpperCase()}`
-            : "Kumpulan artikel dan tips untuk menjaga kewarasanmu."}
-        </p>
+    <div className="max-w-7xl mx-auto space-y-8 pb-10">
+      <div className="relative overflow-hidden rounded-3xl bg-linear-to-r from-emerald-600 to-teal-600 p-8 text-white shadow-xl">
+        <div className="relative z-10">
+          <h1 className="text-3xl font-bold flex items-center gap-3">
+            <BookOpen className="w-8 h-8 text-emerald-200" />
+            Educare
+          </h1>
+          <p className="mt-2 text-emerald-100 max-w-2xl">
+            {filter
+              ? `Menampilkan artikel rekomendasi khusus untuk: ${filter.toUpperCase()}`
+              : "Perpusatakaan digital untuk perawat. Temukan tips praktis menjaga kewarasan dan kesehatan mentalmu di sini."}
+          </p>
+        </div>
+
+        {/* Dekorasi Background */}
+        <div className="absolute top-0 right-0 -mr-16 -mt-16 h-64 w-64 rounded-full bg-white/10 blur-3xl"></div>
+        <div className="absolute bottom-0 left-10 h-32 w-32 rounded-full bg-white/10 blur-2xl"></div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
