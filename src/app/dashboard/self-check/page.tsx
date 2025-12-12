@@ -1,16 +1,27 @@
-"use client";
+"use client"
 
-import { useState, useEffect } from "react";
-import { createClient } from "@/utils/supabase/client";
-import { useRouter } from "next/navigation";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import { toast } from "sonner";
-import { dassQuestions, calculateScore } from "@/constants/dass";
-import { Smile, Frown, Meh, Angry, BatteryWarning, CheckCircle, Phone, Activity } from "lucide-react";
+import { useState, useEffect } from "react"
+import { createClient } from "@/utils/supabase/client"
+import { useRouter } from "next/navigation"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Textarea } from "@/components/ui/textarea"
+import { Label } from "@/components/ui/label"
+import { toast } from "sonner"
+import { dassQuestions, calculateScore } from "@/constants/dass"
+import {
+  Smile,
+  Frown,
+  Meh,
+  Angry,
+  BatteryWarning,
+  CheckCircle,
+  Phone,
+  Activity,
+  ClipboardList,
+  Loader2,
+} from "lucide-react"
 import {
   Dialog,
   DialogContent,
@@ -18,7 +29,7 @@ import {
   DialogTitle,
   DialogFooter,
   DialogDescription,
-} from "@/components/ui/dialog";
+} from "@/components/ui/dialog"
 
 // Quote Database
 const quotes = [
@@ -26,38 +37,38 @@ const quotes = [
   "Tarik napas... Hembuskan... Satu masalah per satu waktu. 🍃",
   "Istirahat itu produktif. Jangan merasa bersalah ya. 🛌",
   "Dunia butuh senyummu, tapi kamu butuh bahagiamu. 😊",
-];
+]
 
 export default function SelfCheckPage() {
-  const supabase = createClient();
-  const router = useRouter();
-  const [loading, setLoading] = useState(false);
+  const supabase = createClient()
+  const router = useRouter()
+  const [loading, setLoading] = useState(false)
 
   // States
-  const [mood, setMood] = useState<string>("");
-  const [note, setNote] = useState("");
-  const [answers, setAnswers] = useState<Record<number, number>>({});
+  const [mood, setMood] = useState<string>("")
+  const [note, setNote] = useState("")
+  const [answers, setAnswers] = useState<Record<number, number>>({})
 
   // Logic 1x Sehari
-  const [hasFilledMood, setHasFilledMood] = useState(false);
-  const [hasFilledDASS, setHasFilledDASS] = useState(false);
+  const [hasFilledMood, setHasFilledMood] = useState(false)
+  const [hasFilledDASS, setHasFilledDASS] = useState(false)
 
   // Dialog States
-  const [showMoodResult, setShowMoodResult] = useState(false);
-  const [moodQuote, setMoodQuote] = useState("");
+  const [showMoodResult, setShowMoodResult] = useState(false)
+  const [moodQuote, setMoodQuote] = useState("")
 
-  const [showDassResult, setShowDassResult] = useState(false);
-  const [dassResult, setDassResult] = useState<any>(null);
+  const [showDassResult, setShowDassResult] = useState(false)
+  const [dassResult, setDassResult] = useState<any>(null)
 
   // 1. CEK DATA HARI INI SAAT LOAD
   useEffect(() => {
     const checkTodayLog = async () => {
       const {
         data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) return;
+      } = await supabase.auth.getUser()
+      if (!user) return
 
-      const today = new Date().toISOString().split("T")[0]; // Format YYYY-MM-DD
+      const today = new Date().toISOString().split("T")[0] // Format YYYY-MM-DD
 
       // Cek Mood Hari Ini
       const { data: moods } = await supabase
@@ -65,9 +76,9 @@ export default function SelfCheckPage() {
         .select("created_at")
         .eq("user_id", user.id)
         .gte("created_at", `${today}T00:00:00`)
-        .lte("created_at", `${today}T23:59:59`);
+        .lte("created_at", `${today}T23:59:59`)
 
-      if (moods && moods.length > 0) setHasFilledMood(true);
+      if (moods && moods.length > 0) setHasFilledMood(true)
 
       // Cek DASS Hari Ini
       const { data: dass } = await supabase
@@ -75,62 +86,62 @@ export default function SelfCheckPage() {
         .select("created_at")
         .eq("user_id", user.id)
         .gte("created_at", `${today}T00:00:00`)
-        .lte("created_at", `${today}T23:59:59`);
+        .lte("created_at", `${today}T23:59:59`)
 
-      if (dass && dass.length > 0) setHasFilledDASS(true);
-    };
+      if (dass && dass.length > 0) setHasFilledDASS(true)
+    }
 
-    checkTodayLog();
-  }, []);
+    checkTodayLog()
+  }, [])
 
   // --- SUBMIT MOOD ---
   const submitMood = async () => {
-    if (!mood) return toast.error("Pilih emoji dulu dong!");
-    setLoading(true);
+    if (!mood) return toast.error("Pilih emoji dulu dong!")
+    setLoading(true)
     const {
       data: { user },
-    } = await supabase.auth.getUser();
+    } = await supabase.auth.getUser()
 
     const { error } = await supabase.from("mood_logs").insert({
       user_id: user?.id,
       mood,
       note,
-    });
+    })
 
-    setLoading(false);
+    setLoading(false)
     if (error) {
-      toast.error("Gagal simpan mood");
+      toast.error("Gagal simpan mood")
     } else {
-      setHasFilledMood(true);
-      const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
-      setMoodQuote(randomQuote);
-      setShowMoodResult(true);
+      setHasFilledMood(true)
+      const randomQuote = quotes[Math.floor(Math.random() * quotes.length)]
+      setMoodQuote(randomQuote)
+      setShowMoodResult(true)
     }
-  };
+  }
 
   // --- SUBMIT DASS (UPDATE LOGIC DISINI) ---
   const submitDASS = async () => {
     if (Object.keys(answers).length < 21) {
-      return toast.warning("Isi semua 21 pertanyaan dulu ya!");
+      return toast.warning("Isi semua 21 pertanyaan dulu ya!")
     }
-    setLoading(true);
-    const scores = calculateScore(answers);
+    setLoading(true)
+    const scores = calculateScore(answers)
     const {
       data: { user },
-    } = await supabase.auth.getUser();
+    } = await supabase.auth.getUser()
 
     // Logic Level Simple (>14 itu Moderate ke atas)
-    const getLevel = (val: number) => (val > 20 ? "severe" : val > 14 ? "moderate" : val > 9 ? "mild" : "normal");
+    const getLevel = (val: number) => (val > 20 ? "severe" : val > 14 ? "moderate" : val > 9 ? "mild" : "normal")
 
     // Logic Dominant Issue
-    const maxScore = Math.max(scores.stress, scores.anxiety, scores.depression);
-    let dominantIssue = "general";
-    if (scores.stress === maxScore) dominantIssue = "stress";
-    if (scores.anxiety === maxScore) dominantIssue = "anxiety";
-    if (scores.depression === maxScore) dominantIssue = "depression";
+    const maxScore = Math.max(scores.stress, scores.anxiety, scores.depression)
+    let dominantIssue = "general"
+    if (scores.stress === maxScore) dominantIssue = "stress"
+    if (scores.anxiety === maxScore) dominantIssue = "anxiety"
+    if (scores.depression === maxScore) dominantIssue = "depression"
 
     // Logic High Risk (Kalau ada salah satu yang Moderate/Severe)
-    const isHighRisk = scores.stress > 14 || scores.anxiety > 14 || scores.depression > 14;
+    const isHighRisk = scores.stress > 14 || scores.anxiety > 14 || scores.depression > 14
 
     const { error } = await supabase.from("dass_assessments").insert({
       user_id: user?.id,
@@ -140,17 +151,17 @@ export default function SelfCheckPage() {
       level_stress: getLevel(scores.stress),
       level_anxiety: getLevel(scores.anxiety),
       level_depression: getLevel(scores.depression),
-    });
+    })
 
-    setLoading(false);
+    setLoading(false)
     if (error) {
-      toast.error("Gagal submit tes.");
+      toast.error("Gagal submit tes.")
     } else {
-      setHasFilledDASS(true);
-      setDassResult({ scores, dominantIssue, isHighRisk }); // Simpan status High Risk
-      setShowDassResult(true);
+      setHasFilledDASS(true)
+      setDassResult({ scores, dominantIssue, isHighRisk }) // Simpan status High Risk
+      setShowDassResult(true)
     }
-  };
+  }
 
   // Helper Visual Bar (Versi Warna Custom)
   const VisualBar = ({
@@ -159,21 +170,21 @@ export default function SelfCheckPage() {
     max = 42,
     colorName,
   }: {
-    label: string;
-    score: number;
-    max?: number;
-    colorName: string;
+    label: string
+    score: number
+    max?: number
+    colorName: string
   }) => {
-    const percentage = Math.min((score / max) * 100, 100);
+    const percentage = Math.min((score / max) * 100, 100)
 
     // Lookup Style Manual (Biar Tailwind Baca)
     const styles: Record<string, { text: string; bar: string; track: string }> = {
-      red: { text: "text-red-800", bar: "bg-red-800", track: "bg-red-200" },
-      yellow: { text: "text-yellow-800", bar: "bg-yellow-800", track: "bg-yellow-200" },
-      blue: { text: "text-blue-800", bar: "bg-blue-800", track: "bg-blue-200" },
-    };
+      red: { text: "text-red-800", bar: "bg-red-500", track: "bg-red-200" },
+      yellow: { text: "text-yellow-800", bar: "bg-yellow-500", track: "bg-yellow-200" },
+      blue: { text: "text-blue-800", bar: "bg-blue-500", track: "bg-blue-200" },
+    }
 
-    const currentStyle = styles[colorName] || styles.red;
+    const currentStyle = styles[colorName] || styles.red
 
     return (
       <div className="space-y-1">
@@ -194,8 +205,8 @@ export default function SelfCheckPage() {
           <span>Parah</span>
         </div>
       </div>
-    );
-  };
+    )
+  }
 
   return (
     <div className="max-w-7xl mx-auto space-y-8 pb-10">
@@ -237,7 +248,7 @@ export default function SelfCheckPage() {
           <Card className="border-none shadow-xl bg-white/70 backdrop-blur-md rounded-3xl overflow-hidden">
             <CardHeader className="bg-linear-to-r from-blue-50 to-transparent p-8">
               <CardTitle className="text-2xl text-blue-900">
-                {hasFilledMood ? "Mood hari ini sudah tercatat! ✅" : "Apa yang kamu rasakan sekarang?"}
+                {hasFilledMood ? "Mood hari ini sudah tercatat!" : "Apa yang kamu rasakan sekarang?"}
               </CardTitle>
             </CardHeader>
             <CardContent className="p-8 space-y-8">
@@ -309,45 +320,145 @@ export default function SelfCheckPage() {
 
         {/* === TAB DASS === */}
         <TabsContent value="dass">
-          <Card className="border-none shadow-xl bg-white/70 backdrop-blur-md rounded-3xl">
-            <CardContent className="p-8 space-y-8">
+          <Card className="border-none shadow-xl bg-white/70 backdrop-blur-md rounded-3xl overflow-hidden">
+            {/* Header: Judul & Progress Bar */}
+            <CardHeader className="bg-linear-to-r from-cyan-50 to-transparent p-6 border-b border-cyan-100">
+              <div className="flex flex-col gap-4">
+                <div className="flex justify-between items-center">
+                  <CardTitle className="text-xl text-cyan-900 flex items-center gap-2">
+                    <ClipboardList className="w-5 h-5 text-cyan-600" />
+                    Tes Kesehatan Mental
+                  </CardTitle>
+                  {!hasFilledDASS && (
+                    <span className="text-xs font-bold text-cyan-600 bg-cyan-100 px-3 py-1 rounded-full">
+                      {Object.keys(answers).length} / 21
+                    </span>
+                  )}
+                </div>
+                {!hasFilledDASS && (
+                  <div className="h-2 w-full bg-cyan-100 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-cyan-500 transition-all duration-500 ease-out"
+                      style={{ width: `${(Object.keys(answers).length / 21) * 100}%` }}
+                    />
+                  </div>
+                )}
+              </div>
+            </CardHeader>
+
+            <CardContent className="p-8 min-h-[400px] flex flex-col justify-center">
               {!hasFilledDASS ? (
-                <>
-                  <div className="space-y-4">
-                    {dassQuestions.map((q, index) => (
-                      <div key={q.id} className="space-y-3 border-b border-gray-200/50 pb-4 last:border-0">
-                        <p className="font-medium text-gray-800">
-                          {index + 1}. {q.text}
-                        </p>
-                        <div className="flex gap-4">
-                          {[0, 1, 2, 3].map(score => (
-                            <label key={score} className="flex flex-col items-center cursor-pointer">
-                              <input
-                                type="radio"
-                                name={`q-${q.id}`}
-                                className="w-5 h-5 accent-cyan-600 mb-1"
-                                checked={answers[q.id] === score}
-                                onChange={() => setAnswers({ ...answers, [q.id]: score })}
-                              />
-                              <span className="text-sm text-gray-500">{score}</span>
-                            </label>
+                // MODE QUIZ (Interactive)
+                <div className="max-w-xl mx-auto w-full space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                  {/* Pertanyaan Aktif */}
+                  {/* Kita cari pertanyaan pertama yang BELUM dijawab, atau tampilkan tombol submit kalau udah semua */}
+                  {(() => {
+                    const currentQuestionIndex = dassQuestions.findIndex(q => answers[q.id] === undefined)
+                    const isFinished = currentQuestionIndex === -1
+                    const q = isFinished ? null : dassQuestions[currentQuestionIndex]
+
+                    if (isFinished) {
+                      return (
+                        <div className="text-center space-y-6">
+                          <div className="w-24 h-24 bg-cyan-100 rounded-full flex items-center justify-center mx-auto text-4xl animate-bounce">
+                            🎉
+                          </div>
+                          <div>
+                            <h3 className="text-2xl font-bold text-gray-800">Semua Terjawab!</h3>
+                            <p className="text-gray-500">Siap untuk melihat hasil analisanya?</p>
+                          </div>
+                          <Button
+                            onClick={submitDASS}
+                            disabled={loading}
+                            className="w-full h-14 text-lg rounded-xl bg-linear-to-r from-cyan-600 to-teal-600 hover:from-cyan-700 hover:to-teal-700 font-bold shadow-lg shadow-cyan-200 transition-all hover:-translate-y-1"
+                          >
+                            {loading ? (
+                              <div className="flex items-center gap-2">
+                                <Loader2 className="w-5 h-5 animate-spin" />
+                                <span>Menganalisa...</span>
+                              </div>
+                            ) : (
+                              "Lihat Hasil Analisa"
+                            )}
+                          </Button>
+                          {/* Tombol Back biar bisa revisi (opsional, reset jawaban terakhir) */}
+                          <Button
+                            variant="ghost"
+                            className="text-gray-400 hover:text-gray-600"
+                            onClick={() => {
+                              const lastId = dassQuestions[20].id
+                              const newAnswers = { ...answers }
+                              delete newAnswers[lastId]
+                              setAnswers(newAnswers)
+                            }}
+                          >
+                            Ulangi pertanyaan terakhir
+                          </Button>
+                        </div>
+                      )
+                    }
+
+                    return (
+                      <div className="space-y-8">
+                        <div className="text-center space-y-2">
+                          <span className="text-xs font-bold tracking-widest text-cyan-500 uppercase">
+                            PERTANYAAN {currentQuestionIndex + 1}
+                          </span>
+                          <h3 className="text-2xl md:text-3xl font-bold text-gray-800 leading-tight">{q?.text}</h3>
+                          <p className="text-sm text-gray-400">Pilih kondisi selama seminggu terakhir</p>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                          {[
+                            { val: 0, label: "Tidak Sesuai", desc: "Sama sekali tidak" },
+                            { val: 1, label: "Jarang", desc: "Kadang-kadang" },
+                            { val: 2, label: "Sering", desc: "Cukup sering" },
+                            { val: 3, label: "Sangat Sering", desc: "Hampir setiap saat" },
+                          ].map(opt => (
+                            <button
+                              key={opt.val}
+                              onClick={() => {
+                                // Set jawaban & otomatis lanjut (karena state berubah, render ulang cari next question)
+                                setAnswers({ ...answers, [q!.id]: opt.val })
+                              }}
+                              className="group relative flex flex-col items-center justify-center p-6 rounded-2xl border-2 border-gray-100 bg-white hover:border-cyan-400 hover:bg-cyan-50 transition-all duration-200 hover:-translate-y-1 active:scale-95"
+                            >
+                              <span className="text-3xl font-bold text-gray-300 group-hover:text-cyan-600 mb-1 transition-colors">
+                                {opt.val}
+                              </span>
+                              <span className="font-bold text-gray-700 group-hover:text-cyan-900">{opt.label}</span>
+                              <span className="text-xs text-gray-400 group-hover:text-cyan-600/70">{opt.desc}</span>
+                            </button>
                           ))}
                         </div>
+
+                        {/* Tombol Back */}
+                        {currentQuestionIndex > 0 && (
+                          <div className="text-center">
+                            <button
+                              className="text-sm text-gray-400 hover:text-cyan-600 underline decoration-dashed"
+                              onClick={() => {
+                                const prevQ = dassQuestions[currentQuestionIndex - 1]
+                                const newAnswers = { ...answers }
+                                delete newAnswers[prevQ.id]
+                                setAnswers(newAnswers)
+                              }}
+                            >
+                              Kembali ke pertanyaan sebelumnya
+                            </button>
+                          </div>
+                        )}
                       </div>
-                    ))}
-                  </div>
-                  <Button
-                    onClick={submitDASS}
-                    disabled={loading}
-                    className="w-full h-12 rounded-xl bg-cyan-600 hover:bg-cyan-700 font-bold"
-                  >
-                    {loading ? "Menghitung..." : "Lihat Hasil"}
-                  </Button>
-                </>
+                    )
+                  })()}
+                </div>
               ) : (
-                <div className="text-center py-10">
+                <div className="text-center py-10 animate-in zoom-in duration-500">
+                  <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 text-green-600">
+                    <CheckCircle className="w-10 h-10" />
+                  </div>
                   <h3 className="text-xl font-bold text-gray-800">Tes Hari Ini Selesai</h3>
-                  <p className="text-gray-500">Hasil tesmu sudah tersimpan di riwayat.</p>
+                  <p className="text-gray-500 mt-2">Hasil tesmu sudah tersimpan di riwayat.</p>
                 </div>
               )}
             </CardContent>
@@ -424,13 +535,9 @@ export default function SelfCheckPage() {
                 📖 Baca Solusi & Edukasi ({dassResult?.dominantIssue})
               </Button>
             )}
-
-            <Button variant="ghost" onClick={() => setShowDassResult(false)}>
-              Tutup
-            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>
-  );
+  )
 }
